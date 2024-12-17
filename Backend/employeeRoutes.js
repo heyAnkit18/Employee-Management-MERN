@@ -29,6 +29,7 @@ router.post('/employees', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
 // 3. Edit an existing employee
 router.put('/employees/:id', async (req, res) => {
     const { id } = req.params;
@@ -111,8 +112,3 @@ router.get('/stats/youngest-employee', async (req, res) => {
 });
 
 module.exports = router;
-
-
-
-
-
