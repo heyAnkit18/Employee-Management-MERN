@@ -1,35 +1,33 @@
-// src/employeeService.js
+import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api'; // Backend API URL
+const API_URL = 'http://localhost:5000/api';
 
-export const getEmployees = (page = 1, limit = 10) => {
-  return fetch(`${API_URL}/employees?page=${page}&limit=${limit}`)
-    .then(response => response.json());
+// Fetch employees with pagination
+export const fetchEmployees = async (page, limit) => {
+    return axios.get(`${API_URL}/employees?page=${page}&limit=${limit}`);
 };
 
-export const addEmployee = (employeeData) => {
-  return fetch(`${API_URL}/employees`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(employeeData),
-  }).then(response => response.json());
+// Add new employee
+export const addEmployee = async (employee) => {
+    return axios.post(`${API_URL}/employees`, employee);
 };
 
-export const editEmployee = (id, employeeData) => {
-  return fetch(`${API_URL}/employees/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(employeeData),
-  }).then(response => response.json());
+// Update employee
+export const updateEmployee = async (id, employee) => {
+    return axios.put(`${API_URL}/employees/${id}`, employee);
 };
 
-export const deleteEmployee = (id) => {
-  return fetch(`${API_URL}/employees/${id}`, {
-    method: 'DELETE',
-  }).then(response => response.json());
+// Delete employee
+export const deleteEmployee = async (id) => {
+    return axios.delete(`${API_URL}/employees/${id}`);
 };
 
-export const getStatistics = () => {
-  return fetch(`${API_URL}/statistics`)
-    .then(response => response.json());
+// Fetch salary range wise employee count
+export const fetchSalaryRangeWiseCount = async () => {
+    return axios.get(`${API_URL}/employees/salaryRangeWiseCount`);
+};
+
+// Fetch youngest employee by department
+export const fetchYoungestEmployeeByDept = async () => {
+    return axios.get(`${API_URL}/employees/youngestEmployeeByDept`);
 };

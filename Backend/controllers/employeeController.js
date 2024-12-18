@@ -125,3 +125,43 @@ exports.getHighestSalaryByDept = (req, res) => {
   });
 };
 
+// Get salary range wise employee count
+exports.getSalaryRangeWiseCount = (req, res) => {
+  const query = `
+    SELECT 
+      COUNT(CASE WHEN salary BETWEEN 0 AND 50000 THEN 1 END) AS '0-50000',
+      COUNT(CASE WHEN salary BETWEEN 50001 AND 100000 THEN 1 END) AS '50001-100000',
+      COUNT(CASE WHEN salary > 100000 THEN 1 END) AS '100000+'
+    FROM employees
+  `;
+
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error fetching salary range count', error: err });
+    }
+    res.status(200).json({ salaryRangeCount: results[0] });
+  });
+};
+
+// Get youngest employee by department
+exports.getYoungestEmployeeByDept = (req, res) => {
+  const query = `
+    SELECT 
+      d.name AS department_name,
+      e.name AS youngest_employee
+    FROM 
+      employees e
+    INNER JOIN 
+      departments d ON e.department_id = d.id
+    WHERE 
+      e.dob = (SELECT MIN(dob) FROM employees WHERE department_id = d.id)
+  `;
+
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error fetching youngest employee by department', error: err });
+    }
+
+    res.status(200).json({ youngestEmployeeByDept: results });
+  });
+};

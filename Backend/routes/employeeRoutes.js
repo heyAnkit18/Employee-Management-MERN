@@ -20,5 +20,12 @@ router.get('/statistics', employeeController.getStatistics);
 // Get highest salary by department
 router.get('/highestSalaryByDept', employeeController.getHighestSalaryByDept);
 
+// Get for salary range wise employee count
+router.get('/salaryRangeWiseCount', employeeController.getSalaryRangeWiseCount);
+
+// Get for youngest employee by department
+router.get('/youngestEmployeeByDept', employeeController.getYoungestEmployeeByDept);
+
+
 module.exports = router;
 
