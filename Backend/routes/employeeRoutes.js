@@ -2,13 +2,23 @@ const express = require('express');
 const router = express.Router();
 const employeeController = require('../controllers/employeeController');
 
-// Routes for employee operations
-router.get('/employees', employeeController.getEmployees);
-router.post('/employees', employeeController.addEmployee);
-router.put('/employees/:id', employeeController.editEmployee);
-router.delete('/employees/:id', employeeController.deleteEmployee);
+// Get all employees with pagination
+router.get('/', employeeController.getEmployees);
 
-// Route for statistics
+// Add a new employee
+router.post('/', employeeController.addEmployee);
+
+// Edit an employee
+router.put('/:id', employeeController.editEmployee);
+
+// Delete an employee
+router.delete('/:id', employeeController.deleteEmployee);
+
+// Get statistics
 router.get('/statistics', employeeController.getStatistics);
 
+// Get highest salary by department
+router.get('/highestSalaryByDept', employeeController.getHighestSalaryByDept);
+
 module.exports = router;
+

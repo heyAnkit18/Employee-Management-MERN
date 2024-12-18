@@ -1,4 +1,4 @@
-const db = require('../config/db');
+const db = require('../config/db');  // Assuming you have db.js for database connection
 
 // Get all employees with pagination
 exports.getEmployees = (req, res) => {
@@ -35,7 +35,13 @@ exports.getEmployees = (req, res) => {
 exports.addEmployee = (req, res) => {
   const { department_id, name, dob, phone, photo, email, salary, status } = req.body;
 
+  // Ensure that all required fields are present
+  if (!department_id || !name || !dob || !phone || !email || !salary || !status) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
   const query = 'INSERT INTO employees (department_id, name, dob, phone, photo, email, salary, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+  
   db.query(query, [department_id, name, dob, phone, photo, email, salary, status], (err, result) => {
     if (err) {
       return res.status(500).json({ message: 'Error adding employee', error: err });
@@ -48,6 +54,11 @@ exports.addEmployee = (req, res) => {
 exports.editEmployee = (req, res) => {
   const employeeId = req.params.id;
   const { department_id, name, dob, phone, photo, email, salary, status } = req.body;
+
+  // Ensure all required fields are present
+  if (!department_id || !name || !dob || !phone || !email || !salary || !status) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
 
   const query = 'UPDATE employees SET department_id = ?, name = ?, dob = ?, phone = ?, photo = ?, email = ?, salary = ?, status = ? WHERE id = ?';
   db.query(query, [department_id, name, dob, phone, photo, email, salary, status, employeeId], (err, result) => {
@@ -94,6 +105,23 @@ exports.getStatistics = (req, res) => {
     }
 
     res.status(200).json({ statistics: results });
+  });
+};
+
+// Get highest salary by department
+exports.getHighestSalaryByDept = (req, res) => {
+  const query = `
+    SELECT department_id, MAX(salary) AS highest_salary
+    FROM employees
+    GROUP BY department_id
+  `;
+
+  db.query(query, (err, result) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error fetching highest salary by department', error: err });
+    }
+
+    res.status(200).json({ highestSalaryByDept: result });
   });
 };
 

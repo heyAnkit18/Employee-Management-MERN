@@ -1,18 +1,17 @@
 const express = require('express');
 const cors = require('cors');
-const employeeRoutes = require('./routes/employeeRoutes');
+const bodyParser = require('body-parser');
+const employeeRoutes = require('./routes/employeeRoutes');  // Adjust the path to where employeeRoutes is located
 
 const app = express();
 
-// Middleware setup
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
 
-// Use the employee routes
-app.use('/api', employeeRoutes);
+// Register employee routes
+app.use('/api/employees', employeeRoutes);
 
-// Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
