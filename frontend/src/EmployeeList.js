@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { fetchEmployees, fetchSalaryRangeWiseCount, fetchYoungestEmployeeByDept } from './employeeService'; // Import the new functions
+import { fetchEmployees, fetchSalaryRangeWiseCount, fetchYoungestEmployeeByDept } from './employeeService'; // Import the service functions
+import './EmployeeList.css'; 
 
 const EmployeeList = () => {
     const [employees, setEmployees] = useState([]);
@@ -8,71 +9,117 @@ const EmployeeList = () => {
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
     const [totalPages, setTotalPages] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
     useEffect(() => {
-        // Fetch employees data
+        
         const fetchData = async () => {
+            setLoading(true);
+            setError('');
             try {
+              
                 const employeesData = await fetchEmployees(page, limit);
-                setEmployees(employeesData.data.employees);
-                setTotalPages(employeesData.data.totalPages);
+                setEmployees(employeesData.data?.employees || []);
+                setTotalPages(employeesData.data?.totalPages || 1);
 
+                // Fetch salary range-wise employee count
                 const salaryData = await fetchSalaryRangeWiseCount();
-                setSalaryRange(salaryData.data.salaryRangeCount);
+                setSalaryRange(salaryData.data?.salaryRangeCount || {});
 
+                // Fetch youngest employees by department
                 const youngestData = await fetchYoungestEmployeeByDept();
-                setYoungestEmployees(youngestData.data.youngestEmployeeByDept);
-            } catch (error) {
-                console.error('Error fetching data', error);
+                setYoungestEmployees(youngestData.data?.youngestEmployeeByDept || []);
+            } catch (err) {
+                console.error('Error fetching data:', err);
+                setError('Failed to fetch data. Please try again later.');
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchData();
     }, [page, limit]);
 
-    // Handle pagination change
+   
     const handlePageChange = (newPage) => {
-        setPage(newPage);
+        if (newPage >= 1 && newPage <= totalPages) {
+            setPage(newPage);
+        }
     };
 
+   
+    if (loading) {
+        return <div className="loading">Loading...</div>;
+    }
+
+    
+    if (error) {
+        return <div className="error">{error}</div>;
+    }
+
     return (
-        <div>
+        <div className="employee-list-container">
             <h1>Employee Portal</h1>
 
-            <div>
-                <h2>Salary Range Wise Employee Count</h2>
-                <p>0 - 50,000: {salaryRange['0-50000']}</p>
-                <p>50,001 - 100,000: {salaryRange['50001-100000']}</p>
-                <p>100,000+: {salaryRange['100000+']}</p>
+            {/* Salary Range Section */}
+            <div className="salary-range">
+                <h2 className="section-title">Salary Range Wise Employee Count</h2>
+                <p>0 - 50,000: {salaryRange['0-50000'] || 0}</p>
+                <p>50,001 - 100,000: {salaryRange['50001-100000'] || 0}</p>
+                <p>100,000+: {salaryRange['100000+'] || 0}</p>
             </div>
 
-            <div>
-                <h2>Youngest Employee by Department</h2>
-                {youngestEmployees.map((dept) => (
-                    <div key={dept.department_name}>
-                        <p>Department: {dept.department_name}</p>
-                        <p>Youngest Employee: {dept.youngest_employee}</p>
-                    </div>
-                ))}
+            {/* Youngest Employee by Department Section */}
+            <div className="youngest-employee">
+                <h2 className="section-title">Youngest Employee by Department</h2>
+                {youngestEmployees.length > 0 ? (
+                    youngestEmployees.map((dept) => (
+                        <div key={dept.department_name} className="department">
+                            <p>
+                                <strong>Department:</strong> {dept.department_name || 'N/A'}
+                            </p>
+                            <p>
+                                <strong>Youngest Employee:</strong> {dept.youngest_employee || 'N/A'}
+                            </p>
+                        </div>
+                    ))
+                ) : (
+                    <p>No data available.</p>
+                )}
             </div>
 
-            <div>
-                <h2>Employees</h2>
-                <ul>
-                    {employees.map((employee) => (
-                        <li key={employee.id}>
-                            <strong>Name:</strong> {employee.name} - <strong>Salary:</strong> {employee.salary}
-                        </li>
-                    ))}
-                </ul>
+            {/* Employee List Section */}
+            <div className="employee-list">
+                <h2 className="section-title">Employees</h2>
+                {employees.length > 0 ? (
+                    <ul>
+                        {employees.map((employee) => (
+                            <li key={employee.id}>
+                                <strong>Name:</strong> {employee.name} - <strong>Salary:</strong> {employee.salary}
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>No employees found.</p>
+                )}
             </div>
 
-            <div>
-                <button onClick={() => handlePageChange(page - 1)} disabled={page === 1}>
+            {/* Pagination Section */}
+            <div className="pagination">
+                <button
+                    onClick={() => handlePageChange(page - 1)}
+                    disabled={page === 1}
+                >
                     Previous
                 </button>
-                <span> Page {page} of {totalPages} </span>
-                <button onClick={() => handlePageChange(page + 1)} disabled={page === totalPages}>
+                <span>
+                    Page {page} of {totalPages}
+                </span>
+                <button
+                    onClick={() => handlePageChange(page + 1)}
+                    disabled={page === totalPages}
+                >
                     Next
                 </button>
             </div>

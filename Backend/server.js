@@ -1,8 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const employeeRoutes = require('./routes/employeeRoutes');  // Adjust the path to where employeeRoutes is located
-
+const employeeRoutes = require('./routes/employeeRoutes'); 
 const app = express();
 
 app.use(cors());
