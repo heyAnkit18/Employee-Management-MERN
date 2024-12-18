@@ -37,7 +37,7 @@ const EmployeeList = () => {
 
     return (
         <div>
-            <h1>Employee List</h1>
+            <h1>Employee Portal</h1>
 
             <div>
                 <h2>Salary Range Wise Employee Count</h2>
@@ -61,7 +61,7 @@ const EmployeeList = () => {
                 <ul>
                     {employees.map((employee) => (
                         <li key={employee.id}>
-                            {employee.name} - {employee.department_id} - {employee.salary}
+                            <strong>Name:</strong> {employee.name} - <strong>Salary:</strong> {employee.salary}
                         </li>
                     ))}
                 </ul>
